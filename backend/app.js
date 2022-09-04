@@ -1,5 +1,5 @@
 const express = require("express");
-const Thing = require('./models/Thing');
+const stuffRoutes = require("./routes/stuff");
 /*
    _____         __                                __           __             __
   / ___/  ___   / /_  __  __    ____          ____/ /  ____ _  / /_  ____ _   / /_   ____ _   _____  ___
@@ -56,64 +56,7 @@ app.use((req, res, next) => {
     next();
   });
 
-app.post("/api/stuff", (req, res, next) => {
-    delete req.body._id;
-    const thing = new Thing({
-        ...req.body
-        /*
-        equivalent too:
-        title: req.body.title,
-        description: req.body.description,
-        ....
-        */
-    });
-    thing.save()
-        .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-        .catch(error => res.status(400).json({ error }));
-});
+app.use('/api/stuff', stuffRoutes);
 
-app.put('/api/stuff/:id', (req, res, next) => { // Modify object
-
-    Thing.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Objet modifié'}))
-        .catch(error => res.status(400).json({ error }));
-});
-
-app.delete('/api/stuff/:id', (req,res, next) => { // delete object
-    Thing.deleteOne({ _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Objet supprimé'}))
-        .catch(error => res.status(400).json({ error}));
-});
-
-app.get("/api/stuff/:id", (req, res, next) => { // get specific ID information
-    Thing.findOne({ _id: req.params.id}) // Filter on ID
-        .then(things => res.status(200).json(things))
-        .catch(error => res.status(404).json({ error }));
-});
-
-app.get("/api/stuff", (req, res, next) => {
-//   const stuff = [
-//     {
-//       _id: "1",
-//       title: "Des lunettes",
-//       description: "Les infos de mon premier objet",
-//       imageUrl: "",
-//       price: 4000,
-//       userId: "qsomhivqios",
-//     },
-//     {
-//       _id: "2",
-//       title: "Une clé USB non fonctionnelle",
-//       description: "Les infos de mon deuxième objet",
-//       imageUrl:
-//         "https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg",
-//       price: 2900,
-//       userId: "qsomihvqios",
-//     },
-//   ];
-    Thing.find()
-        .then(things => res.status(200).json(things))
-        .catch(error => res.status(400).json({ error }));
-});
 
 module.exports = app;
